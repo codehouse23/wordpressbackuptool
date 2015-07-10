@@ -53,6 +53,14 @@ For support questions or feedback please contact us at info@number42.io
 
 ## Release Notes ##
 
+#### Version 0.2 / 2015-07-10
+* table layout for backup files
+* remove ZIP files per link, if needed
+* create backup before restore
+* show MD5 checksum
+* compare current/previous MD5 checksum
+* show differences of ZIP, from MD5 checksum
+
 #### Version 0.1 / 2015-07-10
 
 * first development
