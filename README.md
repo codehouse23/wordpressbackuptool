@@ -34,6 +34,16 @@ For support questions or feedback please contact us at info@number42.io
 5. Setup the array's for your different installation in inc/config.php
 6. Make also sure that your Wordpress installation has write access for restore.
 
+## Shell scripting for deployment (Installation topic 2-6)
+
+    cd /var/www
+    sudo mkdir wpbackup
+    sudo chown -R www-data:www-data /var/www/backup
+    sudo chown -R www-data:www-data /var/www/wpbackup
+    sudo -Hu www-data git clone https://github.com/number42io/wordpressbackuptool.git /var/www/wpbackup
+    cd /var/www/wpbackup/inc
+    sudo -Hu www-data cp config.php.sample config.php
+
 ## Release Notes ##
 
 #### Version 0.1 / 2015-07-10
