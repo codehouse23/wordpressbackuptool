@@ -15,6 +15,10 @@ Goal is to backup and restore Wordpress installation, if you are developing into
 * Restore Wordpress Backup with 1-Click
 * Show done backups
 
+### Screenshot ###
+Example how-to manage backups for multi WP instalaltion for development and/or testing.
+![](https://raw.githubusercontent.com/number42io/wordpressbackuptool/master/img/screenshot1.png)
+
 ## Frequently Asked Questions ##
 
 **Can I get support?**
