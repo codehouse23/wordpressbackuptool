@@ -5,7 +5,7 @@
  * @author Christian Hoenick (Number42.io)
  * @copyright reserved by Number42.io
  * @license GPL V3
- * @version 0.1
+ * @version 0.2
  *
  */
 
@@ -25,9 +25,6 @@ if ( (isset($_GET["id"]) && (!empty($_GET["id"]) || $_GET["id"] == 0)) && (isset
 	
 	switch($action) {
 	case "backupnow":
-		// increase script timeout value
-		ini_set('max_execution_time', 5000);
-
 		// define variables
 		$zipFileName = BACKUP_STORAGE . '/' . $arySource[$id]["arcprefix"] .'_'. date("Ymd") .'_'. date("His") . '.zip';
 		$backupDirectory = $arySource[$id]["path"]."/";
@@ -42,16 +39,34 @@ if ( (isset($_GET["id"]) && (!empty($_GET["id"]) || $_GET["id"] == 0)) && (isset
 		break;
 	case "restorenow":
 		if ( isset($_GET["file"]) && !empty($_GET["file"])) {
-			$zipFile2Extract = BACKUP_STORAGE . '/' . $_GET["file"];
+			$filename = htmlspecialchars($_GET["file"]);
+			$zipFile2Extract = BACKUP_STORAGE . '/' . $filename;
 			$targetPath = $arySource[$id]["path"]."/";
-			removeFilesFromFolder($targetPath);
-			extractZipFile($zipFile2Extract, $targetPath);
+			
+			// backup target folder
+			$zipFileName = BACKUP_STORAGE . '/' . $arySource[$id]["arcprefix"] .'_'. date("Ymd") .'_'. date("His") . '_4restore.zip';
+			$aryZippedContent = createZipFile($zipFileName, $targetPath);
+
+			if( is_array($aryZippedContent) && count($aryZippedContent) > 0) {
+				// clean up target folder
+				removeFilesFromFolder($targetPath);
+				extractZipFile($zipFile2Extract, $targetPath);
+			}
 		} else {
 			// no file name
 		}
 		break;
 	case "backupdone":
 		$flashmsg = FLASH_MSG_BACKUP_DONE . "&nbsp;" . $arySource[$id]["name"];
+		break;
+	case "removezip":
+		if ( isset($_GET["file"]) && !empty($_GET["file"])) {
+			$filename = htmlspecialchars($_GET["file"]);
+			$realFilePath = BACKUP_STORAGE . '/' . $filename;
+			unlink($realFilePath);
+		} else {
+                        // no file name
+                }
 		break;
 	}
 } 
@@ -88,7 +103,7 @@ if ( (isset($_GET["id"]) && (!empty($_GET["id"]) || $_GET["id"] == 0)) && (isset
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="#">Wordpress Backup Tool</a>
+          <a class="navbar-brand" href="./index.php">Wordpress Backup Tool</a>
         </div>
         <div id="navbar" class="collapse navbar-collapse">
           <ul class="nav navbar-nav">
@@ -99,7 +114,7 @@ if ( (isset($_GET["id"]) && (!empty($_GET["id"]) || $_GET["id"] == 0)) && (isset
     </nav>
 	<main>
 	<?php if ($flashmsg != false) { ?>
-		<div class="container">
+		<div id="flash-msg" class="container">
 		<div class="alert alert-success alert-dismissible" role="alert">
   		<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
  		<strong><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span> </strong><?php echo $flashmsg; ?>
@@ -126,18 +141,34 @@ if ( (isset($_GET["id"]) && (!empty($_GET["id"]) || $_GET["id"] == 0)) && (isset
 
                 		<div id="collapse-<?php echo $key; ?>" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-<?php echo $key; ?>">
                 		<div class="panel-body">
-                			<p>&nbsp;
+					<div class="row">&nbsp;&nbsp;
 					<a href="./index.php?id=<?php echo $key; ?>&action=backupnow"><span class="glyphicon glyphicon-floppy-disk" aria-hidden="true"></span> Backup Files</a>
-					&nbsp;</p>
+					</div>
+					<table class="table table-striped">
+					<thead>
+					<tr><th>#</th><th>Date<th>Filename</th><th>MD5 Checksum</th><th>Difference</th><th>Restore</th><th>Remove</th></tr>
+					</thead>
+					<tbody>
 					<?php
+					$lastChecksum = "no";
         			        // loop over all saved backups
         			        foreach ($aryFileList as $fid => $filename) {
 					?>
-                			        <strong> <?php echo getDateTimeFromFileName($filename); ?></strong>
-                        			&nbsp;<?php echo  basename($filename); ?>&nbsp;
-	   					<a href="./index.php?id=<?php echo $key; ?>&action=restorenow&file=<?php echo basename($filename); ?>"><span class="glyphicon glyphicon-share-alt" aria-hidden="true"></span> restore</a>
-						<br />
-					<?php } ?>
+						<tr><td><?php echo $fid; ?></td>
+						<td><?php echo getDateTimeFromFileName($filename); ?></td>
+                        			<td><?php echo basename($filename); ?></td>
+                                                <td><?php echo md5_file($filename); ?></td>
+						<td><?php echo ($lastChecksum == md5_file($filename) ? '<span class="label label-default">no diff.</span>' : '<span class="label label-danger">diff</span>'); ?></td>
+	   					<td><a href="./index.php?id=<?php echo $key; ?>&action=restorenow&file=<?php echo basename($filename); ?>"><span class="glyphicon glyphicon-share-alt" aria-hidden="true"></span></a></td>
+						<td>
+						<a href="./index.php?id=<?php echo $key; ?>&action=removezip&file=<?php echo basename($filename); ?>"><span class="glyphicon glyphicon-trash" aria-hidden="true"></span></a>
+						</td>
+						</tr>
+						
+					<?php $lastChecksum = md5_file($filename);
+					} ?>
+					</tbody>
+					</table>
 
 				</div>
 				</div>
@@ -152,6 +183,18 @@ if ( (isset($_GET["id"]) && (!empty($_GET["id"]) || $_GET["id"] == 0)) && (isset
 	<script src="http://code.jquery.com/jquery-latest.js"></script>
 	<!-- Latest compiled and minified JavaScript -->
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+	<script>
+		$(document).ready (function(){
+
+			<?php if ($flashmsg != false) { ?>
+			window.setTimeout(function() {
+    			$("#flash-msg").fadeTo(300, 0).slideUp(300, function(){
+        		$(this).remove(); 
+    			});
+			}, 3000);
+			<?php } ?>
+		});
+	</script>
 </body>
 </html>
 
