@@ -32,7 +32,8 @@ For support questions or feedback please contact us at info@number42.io
 3. Copy inc/config.php.sample to inc/config.php
 4. Make that you have the correct rights for your installation, so that the Webserver get write access (e.g. chown -R www-data:www-data /var/www/wpbackup)
 5. Setup the array's for your different installation in inc/config.php
-6. Make also sure that your Wordpress installation has write access for restore.
+6. Adjust the path of .htaccess AuthUserFile
+7. Make also sure that your Wordpress installation has write access for restore.
 
 ## Shell scripting for deployment (Installation topic 2-6)
 
@@ -43,6 +44,7 @@ For support questions or feedback please contact us at info@number42.io
     sudo -Hu www-data git clone https://github.com/number42io/wordpressbackuptool.git /var/www/wpbackup
     cd /var/www/wpbackup/inc
     sudo -Hu www-data cp config.php.sample config.php
+    sudo -Hu www-data sed -i 's|/usr/verwaltung/web/.htusers|/etc/.htusers|g' /var/www/wpbackup/.htaccess
 
 ## Release Notes ##
 
