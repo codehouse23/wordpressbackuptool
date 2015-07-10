@@ -39,12 +39,13 @@ For support questions or feedback please contact us at info@number42.io
 
     cd /var/www
     sudo mkdir wpbackup
-    sudo chown -R www-data:www-data /var/www/backup
+    sudo chown -R www-data:www-data /var/www/wpbackup
     sudo chown -R www-data:www-data /var/www/wpbackup
     sudo -Hu www-data git clone https://github.com/number42io/wordpressbackuptool.git /var/www/wpbackup
     cd /var/www/wpbackup/inc
     sudo -Hu www-data cp config.php.sample config.php
     sudo -Hu www-data sed -i 's|/usr/verwaltung/web/.htusers|/etc/.htusers|g' /var/www/wpbackup/.htaccess
+    sudo -Hu www-data mkdir /var/www/wpbackup/backups
 
 ## Release Notes ##
 
