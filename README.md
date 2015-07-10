@@ -18,12 +18,15 @@ Goal is to backup and restore Wordpress installation, if you are developing into
 ## Frequently Asked Questions ##
 
 **Can I get support?**
+
 Yes and no. Due to the fact that this is freeware, we will not react in a definied time window, but we will try to support you at your questions a soon as possiblie.
 
 **Where can I give feedback or ask support questions?**
+
 For support questions or feedback please contact us at info@number42.io
 
 ## Installation ##
+
 1. Create a folder at your Webserver, where your Wordpress installation is running (e.g. /var/www/wpbackup)
 2. Prepare your Webserver, so that this folder can be reached via a other DNS than your WP installation
 3. Copy inc/config.php.sample to inc/config.php
@@ -33,7 +36,7 @@ For support questions or feedback please contact us at info@number42.io
 
 ## Release Notes ##
 
-#### 0.1 / 2015-07-10
+#### Version 0.1 / 2015-07-10
 
 * first development
 * create backup ZIP
