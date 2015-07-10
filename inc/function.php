@@ -7,7 +7,7 @@
  * @author Christian Hoenick (Number42.io)
  * @copyright reserved by Number42.io
  * @license GPL V3
- * @version 0.1
+ * @version 0.2
  *
  */
 
