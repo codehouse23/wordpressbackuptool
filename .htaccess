@@ -1,0 +1,5 @@
+# .htaccess-Datei für Web-Verzeichnis /service
+AuthType Basic
+AuthName "Wordpress Backup Tool"
+AuthUserFile /usr/verwaltung/web/.htusers
+Require valid-user
